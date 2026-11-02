@@ -12,6 +12,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.SharedFlow
 
@@ -33,11 +36,14 @@ fun ScreenSetup(sharedFlow: SharedFlow<Int>) {
 @androidx.compose.runtime.Composable
 fun MainScreen(sharedFlow: SharedFlow<Int>) {
     val collectedValues = remember { mutableStateListOf<Int>() }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(sharedFlow) {
-        sharedFlow.collect { value ->
-            println("Collecting $value")
-            collectedValues.add(value)
+    LaunchedEffect(sharedFlow, lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            sharedFlow.collect { value ->
+                println("Collecting $value")
+                collectedValues.add(value)
+            }
         }
     }
 
