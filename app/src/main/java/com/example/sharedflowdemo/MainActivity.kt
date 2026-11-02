@@ -36,6 +36,7 @@ fun MainScreen(sharedFlow: SharedFlow<Int>) {
 
     LaunchedEffect(sharedFlow) {
         sharedFlow.collect { value ->
+            println("Collecting $value")
             collectedValues.add(value)
         }
     }
